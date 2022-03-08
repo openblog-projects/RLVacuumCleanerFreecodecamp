@@ -1,0 +1,29 @@
+{
+    "OneDirt": {
+        "checkpoints": [
+            {
+                "steps": 38833,
+                "file_path": "results/OneDirtWithoutRotation/OneDirt/OneDirt-38833.onnx",
+                "reward": 1.0,
+                "creation_time": 1646682089.893515,
+                "auxillary_file_paths": [
+                    "results/OneDirtWithoutRotation/OneDirt/OneDirt-38833.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 38833,
+            "file_path": "results/OneDirtWithoutRotation/OneDirt.onnx",
+            "reward": 1.0,
+            "creation_time": 1646682089.893515,
+            "auxillary_file_paths": [
+                "results/OneDirtWithoutRotation/OneDirt/OneDirt-38833.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.27.0",
+        "torch_version": "1.8.1"
+    }
+}

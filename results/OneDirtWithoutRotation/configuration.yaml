@@ -1,6 +1,6 @@
 default_settings: null
 behaviors:
-  TwentyDirt:
+  OneDirt:
     trainer_type: ppo
     hyperparameters:
       batch_size: 128
@@ -32,7 +32,7 @@ behaviors:
     init_path: null
     keep_checkpoints: 5
     checkpoint_interval: 500000
-    max_steps: 2500000
+    max_steps: 1000000
     time_horizon: 128
     summary_freq: 20000
     threaded: true
@@ -54,7 +54,7 @@ engine_settings:
   no_graphics: false
 environment_parameters: null
 checkpoint_settings:
-  run_id: TwentyDirt2
+  run_id: OneDirtWithoutRotation
   initialize_from: null
   load_model: false
   resume: false

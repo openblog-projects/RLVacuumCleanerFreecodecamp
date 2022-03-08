@@ -7,75 +7,88 @@ using Unity.MLAgents.Actuators;
 
 public class OneDirt : Agent
 {
-    public int counter = 0;
+    //counter for later
+    //we generally set everything to private that we dont see it in the inspector (we configure everything here so we dont need to configure in inspector)
+    private int counter = 0;
 
-    public float moveSpeed = 3f;
+    //movespeed of agent
+    private float moveSpeed = 3f;
 
-    public float turnSpeed = 300;
+    //turnspeed of agent
+    private float turnSpeed = 300;
 
+    //Vector3 object with name startPosition
     private Vector3 startPosition;
 
+    //rigidbody object
     new private Rigidbody rigidbody;
 
-    public GameObject goal;
+    //still private but with serializefield accessible in inspector (we need this for gameobject goal to attach the goal in the inspector)
+    [SerializeField] private GameObject goal;
 
-    public override void Initialize()
+    //gets once called at beginning after hitting play in the unity editor
+   public override void Initialize()
     {
+        //we store our first transform position (agent position)
         startPosition = transform.position;
-
-        //get rigidbody of agent
+        //gets rigidbody from transform (agent)
         rigidbody = GetComponent<Rigidbody>();
     }
 
+    //is called when EndEpisode() is called or maxsteps are achieved --> one step is one fixed update and fixed update is a function which is called approx twice per frame
     public override void OnEpisodeBegin()
     {
-
-        transform.position = startPosition;
-        transform.rotation = Quaternion.Euler(Vector3.up * Random.Range(0f, 360f));
-        rigidbody.velocity = Vector3.zero;
-
-
+        //accesing the through inspector attached goal object and setActive for very episode begin (make it visible)
         goal.SetActive(true);
-
+        //Agent gets reseted to its original starting position from initialize() method
+        transform.position = startPosition;
+        //take goal object which we will later attach thorugh inspector and position it with 5f distance
+        //Quaternion.Euler = rotates goal object in a certain degree (360) Vector3.up = (0,1,0) Vector.forward = (0,0,1)
         goal.transform.position = startPosition + Quaternion.Euler(Vector3.up * Random.Range(0f, 360f)) * Vector3.forward * 5f;
-
     }
 
+    //heuristic method is needed if we wanna control our agent manually with keyboard 
+    //parameter are action from keyboard input
     public override void Heuristic(in ActionBuffers actionsOut)
     {
+        //takes all vertical movements (straight and back movements)
         int vertical = Mathf.RoundToInt(Input.GetAxisRaw("Vertical"));
+        //takes all horizontal movements for turns
         int horizontal = Mathf.RoundToInt(Input.GetAxisRaw("Horizontal"));
-        bool jump = Input.GetKey(KeyCode.Space);
-
+        //actions gets the discretection values from the keyboard input
         ActionSegment<int> actions = actionsOut.DiscreteActions;
+        //actions werden übergeben und auf agent ausgeführt
         actions[0] = vertical >= 0 ? vertical : 2;
         actions[1] = horizontal >= 0 ? horizontal : 2;
-        actions[2] = jump ? 1 : 0;
     }
 
+    //specifies agent behavior at every step 
+    //actions = contains the buffers of actions to be executed at this step
     public override void OnActionReceived(ActionBuffers actions)
     {
-        // Punish and end episode if the agent strays too far
+        //calculates vector distance between start position and the current positino of the agent 
+        //if bigger than 25 minus reward and endepisode
         if (Vector3.Distance(startPosition, transform.position) > 25f)
         {
             AddReward(-1f);
             EndEpisode();
         }
 
-        // Convert actions from Discrete (0, 1, 2) to expected input values (-1, 0, +1)
-        // of the character controller
+        //assign values for movement or turning
         float vertical = actions.DiscreteActions[0] <= 1 ? actions.DiscreteActions[0] : -1;
-        float horizontal = actions.DiscreteActions[1] <= 1 ? actions.DiscreteActions[1] : -1;
-        bool jump = actions.DiscreteActions[2] > 0;
+        float horizontal = actions.DiscreteActions[1] <= 1 ? actions.DiscreteActions[1] : -1; //-1/1 if turn
 
         // Turning
         if (horizontal != 0f)
         {
+            //determines in which direction turning -1 or 1
             float angle = Mathf.Clamp(horizontal, -1f, 1f) * turnSpeed;
+            //rotate the agent finally
             transform.Rotate(Vector3.up, Time.fixedDeltaTime * angle);
         }
 
         // Movement
+        //transform.forward = vector that points forward 
         Vector3 move = transform.forward * Mathf.Clamp(vertical, -1f, 1f) *
             moveSpeed * Time.fixedDeltaTime;
         rigidbody.MovePosition(transform.position + move);
@@ -83,7 +96,6 @@ public class OneDirt : Agent
 
     private void OnTriggerEnter(Collider other)
     {
-        //
         if (other.gameObject.tag == "goal")
         {
             other.gameObject.SetActive(false);
@@ -94,11 +106,7 @@ public class OneDirt : Agent
                 EndEpisode();
             }
         }
-    }
-
-
-
-    
+    }    
 }
 
 

@@ -1,4 +1,35 @@
 {
+    "TwentyDirt": {
+        "checkpoints": [
+            {
+                "steps": 499947,
+                "file_path": "results/TwentyDirt2/TwentyDirt/TwentyDirt-499947.onnx",
+                "reward": 7.75,
+                "creation_time": 1646429637.368875,
+                "auxillary_file_paths": [
+                    "results/TwentyDirt2/TwentyDirt/TwentyDirt-499947.pt"
+                ]
+            },
+            {
+                "steps": 837190,
+                "file_path": "results/TwentyDirt2/TwentyDirt/TwentyDirt-837190.onnx",
+                "reward": 12.0,
+                "creation_time": 1646431027.20874,
+                "auxillary_file_paths": [
+                    "results/TwentyDirt2/TwentyDirt/TwentyDirt-837190.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 837190,
+            "file_path": "results/TwentyDirt2/TwentyDirt.onnx",
+            "reward": 12.0,
+            "creation_time": 1646431027.20874,
+            "auxillary_file_paths": [
+                "results/TwentyDirt2/TwentyDirt/TwentyDirt-837190.pt"
+            ]
+        }
+    },
     "metadata": {
         "stats_format_version": "0.3.0",
         "mlagents_version": "0.27.0",
