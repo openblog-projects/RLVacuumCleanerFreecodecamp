@@ -42,20 +42,24 @@ public class OneDirt : Agent
         goal.SetActive(true);
         //Agent gets reseted to its original starting position from initialize() method
         transform.position = startPosition;
+        //adjust startposition to height of dirt because we wanna set position of dirt woth startposition
+        startPosition.y = 0.1f;
         //take goal object which we will later attach thorugh inspector and position it with 5f distance
         //Quaternion.Euler = rotates goal object in a certain degree (360) Vector3.up = (0,1,0) Vector.forward = (0,0,1)
         goal.transform.position = startPosition + Quaternion.Euler(Vector3.up * Random.Range(0f, 360f)) * Vector3.forward * 5f;
+        //because dirt has same height as agent now this needs to be changed 
+        //goal.transform.position = new Vector3(goal.transform.position.x, 0.2f, goal.transform.position.x);
     }
 
     //heuristic method is needed if we wanna control our agent manually with keyboard 
     //parameter are action from keyboard input
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        //takes all vertical movements (straight and back movements)
+        //inputs for straight and back movements
         int vertical = Mathf.RoundToInt(Input.GetAxisRaw("Vertical"));
-        //takes all horizontal movements for turns
+        //inputs for turns
         int horizontal = Mathf.RoundToInt(Input.GetAxisRaw("Horizontal"));
-        //actions gets the discretection values from the keyboard input
+        //actions which control the agents movement will be assigned 
         ActionSegment<int> actions = actionsOut.DiscreteActions;
         //actions werden übergeben und auf agent ausgeführt
         actions[0] = vertical >= 0 ? vertical : 2;
@@ -74,7 +78,7 @@ public class OneDirt : Agent
             EndEpisode();
         }
 
-        //assign values for movement or turning
+        //assign values for movement or turning (translation to - or + 1)
         float vertical = actions.DiscreteActions[0] <= 1 ? actions.DiscreteActions[0] : -1;
         float horizontal = actions.DiscreteActions[1] <= 1 ? actions.DiscreteActions[1] : -1; //-1/1 if turn
 
@@ -89,11 +93,14 @@ public class OneDirt : Agent
 
         // Movement
         //transform.forward = vector that points forward 
+        //Mathf.Clamp = returns the -1 or 1 depending on action
+        //Time.fixedDeltaTime = interval in secondsbetween frame rate updates
         Vector3 move = transform.forward * Mathf.Clamp(vertical, -1f, 1f) *
             moveSpeed * Time.fixedDeltaTime;
         rigidbody.MovePosition(transform.position + move);
     }
 
+    //parameter "other" is gameobject from Object which is hit
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "goal")
@@ -110,3 +117,37 @@ public class OneDirt : Agent
 }
 
 
+/*
+Explanation of object informations:
+Max Step
+    - ends an episode if 0
+Behavior name - important for yaml script 
+Vector Obseravtion 
+    - input welchen der agent durch seine sensoren bekommt (represented as list of floats)
+    Space size
+        - Length of vector observations for the agent
+    Stacked Vector
+        - collects past observations to one bigger observation
+
+Actions
+    - 2 discrete branches 
+        - Branch 0 = No movement, move forward, move backward
+        - Branch 1 = No rotation, rotate clockwise, rotate anti-clockwise
+
+Decision requester
+    - determines how many decisions an agent will take (5 decision means that ever 5 steps he tkes a decision)
+
+Box collider
+    - Box collider for not falling through the platform 
+
+Rigidbody 
+    - for moving the agent 
+
+Ray perception sensor
+    - needs tags for finding objects
+    - vertical offset config that agent hits objects 
+
+Training
+    - mlagents-learn config/OneDirt.yaml --run-id=OneDirtWithFinalComments --force  
+    - tensorboard --logdir results --port 6006                     
+*/
